@@ -3,4 +3,7 @@ export interface Jogador {
   readonly phoneNumber: string;
   readonly email: string;
   nome: string;
+  ranking: string;
+  positionRank: number;
+  urlImage: string;
 }
