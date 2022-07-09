@@ -9,7 +9,21 @@ export class JogadoresService {
   private readonly logger = new Logger(JogadoresService.name);
 
   async criarAtualizarJogador(criarJogadorDto: CriarJogadorDto): Promise<void> {
-    await this.criar(criarJogadorDto);
+    const { email } = criarJogadorDto;
+
+    const jogadorEncontrado = await this.jogadores.find(
+      (jogador) => jogador.email === email,
+    );
+
+    if (jogadorEncontrado) {
+      return this.atualizar(jogadorEncontrado, criarJogadorDto);
+    } else {
+      await this.criar(criarJogadorDto);
+    }
+  }
+
+  async consultarJogadores(): Promise<Jogador[]> {
+    return await this.jogadores;
   }
 
   private criar(criarJogadorDto: CriarJogadorDto): void {
@@ -24,8 +38,15 @@ export class JogadoresService {
       positionRank: 1,
       urlImage: 'www.google.com',
     };
-    this.logger.debug(`criaJogadorDto: ${JSON.stringify(jogador)}`);
-
+    this.logger.debug(`Criar Jogador: ${JSON.stringify(jogador)}`);
     this.jogadores.push(jogador);
+  }
+
+  private atualizar(
+    jogadorEncontrado: Jogador,
+    criarJogadorDto: CriarJogadorDto,
+  ): void {
+    const { nome } = criarJogadorDto;
+    jogadorEncontrado.nome = nome;
   }
 }
