@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Query,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { CriarJogadorDto } from '../dtos/criarJogador.dto';
 import { Jogador } from '../interfaces/jogador.interface';
 import { JogadoresService } from '../services/jogadores.service';
@@ -7,6 +16,7 @@ import { JogadoresService } from '../services/jogadores.service';
 export class JogadoresController {
   constructor(private jogadoreService: JogadoresService) {}
   @Post()
+  @UsePipes(ValidationPipe)
   async criarAtualizarJogador(@Body() criarJogadorDto: CriarJogadorDto) {
     await this.jogadoreService.criarAtualizarJogador(criarJogadorDto);
   }
