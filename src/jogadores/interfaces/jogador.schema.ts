@@ -10,6 +10,6 @@ export const JogadorSchema = new mongoose.Schema(
     urlImage: String,
   },
 
-  //Data de criação e deleção
+  //Data de criação e update.
   { timestamps: true, collection: 'jogadores' },
 );
