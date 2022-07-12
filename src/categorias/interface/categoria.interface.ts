@@ -3,7 +3,7 @@ import { Jogador } from 'src/jogadores/interfaces/jogador.interface';
 
 export interface Categoria extends Document {
   readonly categorias: string;
-  describe: string;
+  descricao: string;
   events: Array<Evento>;
   jogadores: Array<Jogador>;
 }
