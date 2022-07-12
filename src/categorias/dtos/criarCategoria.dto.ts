@@ -8,7 +8,7 @@ export class CriaCategoriaDto {
 
   @IsString()
   @IsNotEmpty()
-  readonly description: string;
+  readonly descricao: string;
 
   @IsArray()
   @ArrayMinSize(1)
