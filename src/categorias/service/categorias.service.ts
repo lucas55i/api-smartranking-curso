@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { JogadoresService } from 'src/jogadores/services/jogadores.service';
 import { AtualizarCategoria } from '../dtos/atualizarCAtegoria.dto';
 import { CriaCategoriaDto } from '../dtos/criarCategoria.dto';
 import { Categoria } from '../interface/categoria.interface';
@@ -13,6 +14,7 @@ import { Categoria } from '../interface/categoria.interface';
 export class CategoriasService {
   constructor(
     @InjectModel('Categoria') private readonly categoriaModel: Model<Categoria>,
+    private readonly jogadoresService: JogadoresService,
   ) {}
 
   async criarCategoria(
@@ -31,12 +33,12 @@ export class CategoriasService {
   }
 
   async consultarCategorias(): Promise<Array<Categoria>> {
-    return await this.categoriaModel.find().exec();
+    return await this.categoriaModel.find().populate('jogadores').exec();
   }
 
   async consultarCategoriaPorId(categoria: string): Promise<Categoria> {
     const categoriaEncontrada = await this.categoriaModel
-      .findOne({ categoria })
+      .findOne({ categoria: categoria })
       .exec();
 
     if (!categoriaEncontrada) {
@@ -57,12 +59,52 @@ export class CategoriasService {
 
     if (!categoriaEncontrada) {
       throw new NotFoundException(
-        `A categoria informada: ${categoria} não foi encontrada`,
+        `A categoria informada: ${categoria}, não foi encontrada`,
       );
     }
 
     await this.categoriaModel
       .findByIdAndUpdate({ categoria }, { atualizarCategoria })
+      .exec();
+  }
+
+  async atribuirCategoriaJogador(params: string[]): Promise<void> {
+    // Parametros da url
+    const categoria = params['categoria'];
+    const idJogador = params['idJogador'];
+
+    // Categoria existe
+    const categoriaEncontrada = await this.categoriaModel
+      .findOne({ categoria })
+      .exec();
+    // Busca jogadores cadastrado na categorias.
+    const jogadorEmCategoria = await this.categoriaModel
+      .find({ categoria })
+      .where('jogadores')
+      .in(idJogador)
+      .exec();
+
+    //Utilização de modulos externos.
+    await this.jogadoresService.consultarJogadorPeloId(idJogador);
+
+    if (!categoriaEncontrada) {
+      throw new BadRequestException(
+        `A categoria informada: ${categoria}, não foi encontrada`,
+      );
+    }
+
+    if (jogadorEmCategoria.length > 0) {
+      throw new BadRequestException(
+        `Jogador com o ID: ${idJogador}, Já cadastrado na categoria informada: ${categoria}`,
+      );
+    }
+
+    // Incrementado o objeto recuperado do banco (categoria)
+    // Como a o schema de categoria já possue relação com  jogadores,
+    //  é só adicionar o jogador apartir do id ao array de jogadores
+    categoriaEncontrada.jogadores.push(idJogador);
+    await this.categoriaModel
+      .findOneAndUpdate({ categoria }, { $set: categoriaEncontrada })
       .exec();
   }
 }

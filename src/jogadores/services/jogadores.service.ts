@@ -51,7 +51,7 @@ export class JogadoresService {
   }
 
   async consultarJogadorPeloId(_id: string): Promise<Jogador> {
-    const jogadorEncontrado = this.jogadorModel.findOne({ _id }).exec();
+    const jogadorEncontrado = this.jogadorModel.findById({ _id }).exec();
     if (!jogadorEncontrado) {
       throw new NotFoundException(`Jogador com id ${_id} não encontrado`);
     }
