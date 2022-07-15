@@ -38,7 +38,7 @@ export class CategoriasService {
 
   async consultarCategoriaPorId(categoria: string): Promise<Categoria> {
     const categoriaEncontrada = await this.categoriaModel
-      .findOne({ categoria: categoria })
+      .findOne({ categoria })
       .exec();
 
     if (!categoriaEncontrada) {

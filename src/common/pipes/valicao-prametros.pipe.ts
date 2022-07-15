@@ -4,7 +4,7 @@ import {
   PipeTransform,
 } from '@nestjs/common';
 
-export class JogadoresValidacaoParametosPipe implements PipeTransform {
+export class ValidacaoParametosPipe implements PipeTransform {
   //Pipes criados pelo desenvolvedor.
   transform(value: any, metadata: ArgumentMetadata) {
     if (!value) {
